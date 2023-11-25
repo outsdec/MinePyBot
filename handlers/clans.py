@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 from keyboards.mine import mine, dig
-from keyboards.clans import clans_list
+from keyboards.clans import clans_list, clan_menu_list
 from base.diggers import add_user, find_user, user_exp
 from base.mines import find_mines
 from utils.number_format import spaces_mine
@@ -176,7 +176,7 @@ async def clan_info(call: types.CallbackQuery):
     clan = clans.find_one({"id": int(clan_id)})
     print(clan)
     text = f"Название: {clan['title']}\nЖетоны: {clan['tokens']}" 
-    await call.message.answer(text)
+    await call.message.answer(text, reply_markup=clan_menu_list())
     
 @router.callback_query(F.data.startswith('page:'))
 async def page_switch(call: types.CallbackQuery):
