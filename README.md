@@ -1,2 +1,2 @@
 # MinePyBot
-A game telegram bot written in Python
+## _Игровой TELEGRAM BOT_
