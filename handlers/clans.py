@@ -115,14 +115,18 @@ async def profilebutton(message: Message):
 async def get_clans(callback: types.CallbackQuery):
     code = callback.data.split("_")[1]
     clan = await clans.find_one({"id": code})
+    user_id = callback.from_user.id
+    user = await find_user(user_id)
+    if user["clan_id"] != 0:
+        return callback.message.answer('Вы уже находитесь в клане!')
     if clan:
-        if message.from_user.id not in clan["members"]:
-            await db.clans.update_one({"title": message.text}, {"$push": {"members": message.from_user.id}})
-            await message.reply(f"Вы присоединились к клану {message.text}!")
+        if callback.from_user.id not in clan["members"]:
+            clans.update_one({"id": code}, {"$push": {"members.id": callback.from_user.id, "members.right": 0}})
+            callback.message(f"Вы присоединились к клану [{clan['tag']}] {clan['title']}!")
         else:
-            await message.reply("Вы уже состоите в этом клане!")
+            callback.message.reply("Вы уже состоите в этом клане!")
     else:
-        await message.reply("Такого клана не существует!")
+        await callback.message.reply("Такого клана не существует!")
 # СПИСОК КЛАНОВ (ПАГИНАЦИЯ) #########################################
 
 PAGE_SIZE = 10
