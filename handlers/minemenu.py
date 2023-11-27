@@ -1,13 +1,12 @@
 from aiogram import F
 from aiogram import Router, types
 from aiogram.filters import Command
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from keyboards.mine import mine
-from datetime import datetime
 from base.diggers import add_user, find_user
-from base.mines import add_mines
 
 router = Router()  # [1]
+
 
 @router.message(Command("mine"))
 @router.message(F.text == '⛏ Шахта')  # [2]

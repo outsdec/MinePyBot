@@ -1,8 +1,9 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+
 
 def shop():
     menu = [
-        [   
+        [
             InlineKeyboardButton(text="⛏ Шахта", callback_data="shop_mines"),
         ],
         [
@@ -11,9 +12,11 @@ def shop():
     ]
     menu = InlineKeyboardMarkup(inline_keyboard=menu)
     return menu
+
+
 def shop_mines():
     menu = [
-        [   
+        [
             InlineKeyboardButton(text="⛏ Деревянная кирка", callback_data="shop_mines_pickaxe"),
         ],
         [
@@ -23,9 +26,10 @@ def shop_mines():
     menu = InlineKeyboardMarkup(inline_keyboard=menu)
     return menu
 
+
 def shop_mines_pickaxe_buy():
     menu = [
-        [   
+        [
             InlineKeyboardButton(text="Купить", callback_data="shop_mines_pickaxe_buy"),
         ],
         [

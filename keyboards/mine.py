@@ -1,7 +1,10 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, \
+    ReplyKeyboardRemove
+
+
 def mine():
     menu = [
-        [   
+        [
             InlineKeyboardButton(text="Песчаный карьер", callback_data="mine_1"),
         ],
         [
@@ -21,6 +24,7 @@ def mine():
     menu = InlineKeyboardMarkup(inline_keyboard=menu)
     return menu
 
+
 def dig():
     menu = [
         [
@@ -34,6 +38,7 @@ def dig():
     ]
     menu = InlineKeyboardMarkup(inline_keyboard=menu)
     return menu
+
 
 def items(code):
     menu = [

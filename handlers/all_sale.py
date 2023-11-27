@@ -1,14 +1,11 @@
-from aiogram import Bot
 from aiogram import F, Router, types
-from aiogram.filters import Command
-from aiogram.types import Message, LabeledPrice, PreCheckoutQuery, FSInputFile, ReplyKeyboardRemove, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from keyboards.start import start
-from base.diggers import add_user, find_user
-from base.stats import botstat
-from utils.number_format import spaces, spaces_mine
-from aiogram.types.message import ContentType
-from pymongo import MongoClient
 
+from base.diggers import find_user
+from base.stats import botstat
+
+from utils.number_format import spaces, spaces_mine
+
+from pymongo import MongoClient
 client = MongoClient("mongodb+srv://Outsdec:Mama1980@cluster0.brpqv.mongodb.net/?retryWrites=true&w=majority")
 db = client["Mineprison"]
 users = db["users"]

@@ -5,11 +5,12 @@ from base.nickname import update_nickname
 
 router = Router()  # [1]
 
+
 @router.message(Command("nick"))
 async def cmd_name(message: types.Message, command: CommandObject):
     if command.args:
         print(len(command.args))
-        if(len(command.args) > 20):
+        if len(command.args) > 20:
             return message.answer('Ник должен быть меньше 20 символов!')
         else:
             userid = message.from_user.id
