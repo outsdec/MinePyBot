@@ -6,7 +6,9 @@ from aiogram.filters import Command, CommandObject
 from base.nickname import update_nickname
 from base.mines import add_mines
 from pymongo import MongoClient
-client = MongoClient("mongodb+srv://Outsdec:Mama1980@cluster0.brpqv.mongodb.net/?retryWrites=true&w=majority")
+from config_reader import config
+
+client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 router = Router()  # [1]

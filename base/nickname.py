@@ -2,8 +2,9 @@ from pymongo import MongoClient
 from datetime import datetime
 from utils.number_format import spaces
 from base.diggers import find_user, add_user
+from config_reader import config
 
-client = MongoClient("mongodb+srv://Outsdec:Mama1980@cluster0.brpqv.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 

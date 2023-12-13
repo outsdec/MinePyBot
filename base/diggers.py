@@ -2,9 +2,11 @@ from aiogram import F, Bot
 from pymongo import MongoClient
 from datetime import datetime
 from base.stats import botstat
+from config_reader import config
 
-bot = Bot(token="6380980028:AAF80OnPKPfoPdoo_HE9mUcxs0s1ddnY-w0")
-client = MongoClient("mongodb+srv://Outsdec:Mama1980@cluster0.brpqv.mongodb.net/?retryWrites=true&w=majority")
+bot = Bot(token=config.bot_token.get_secret_value())
+
+client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 stats = db["stats"]

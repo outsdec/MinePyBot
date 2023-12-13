@@ -6,11 +6,12 @@ from keyboards.shop import shop, shop_mines, shop_mines_pickaxe_buy
 from base.diggers import add_user, find_user
 from base.stats import botstat
 from pymongo import MongoClient
+from config_reader import config
 
-bot = Bot(token="6380980028:AAF80OnPKPfoPdoo_HE9mUcxs0s1ddnY-w0")
+bot = Bot(config.bot_token.get_secret_value())
 
 
-client = MongoClient("mongodb+srv://Outsdec:Mama1980@cluster0.brpqv.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 stats = db["stats"]
