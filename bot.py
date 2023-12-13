@@ -1,18 +1,15 @@
 from aiogram import F, Bot, Dispatcher, types
 from aiogram.enums import ContentType
 import asyncio
-import logging
-from typing import Collection
 from datetime import datetime, timedelta
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
-    newsletter, eval, shop, clans
+    newsletter, eval, shop, clans, cases
 from handlers.donate import pre_checkout_query, successful_payment
 import logging
-from pymongo import MongoClient
 import motor.motor_asyncio
+from config_reader import config
 
-client = motor.motor_asyncio.AsyncIOMotorClient(
-    "mongodb+srv://Outsdec:Mama1980@cluster0.brpqv.mongodb.net/?retryWrites=true&w=majority")
+client = motor.motor_asyncio.AsyncIOMotorClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 miners = db["mines"]
@@ -21,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.INFO, filename='bot.log',
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-bot = Bot(token="6380980028:AAF80OnPKPfoPdoo_HE9mUcxs0s1ddnY-w0")
+bot = Bot(token=config.bot_token.get_secret_value())
 dp = Dispatcher()
 
 dp.include_routers(start.router,
@@ -37,7 +34,8 @@ dp.include_routers(start.router,
                    newsletter.router,
                    eval.router,
                    shop.router,
-                   clans.router
+                   clans.router,
+                   cases.router
                    )
 
 dp.pre_checkout_query.register(pre_checkout_query)
@@ -55,7 +53,7 @@ async def update_health():
         hp = document['health']
         health_now = hp["now"]
         health_max = hp["max"]
-        if (health_now < health_max):
+        if health_now < health_max:
             users.update_one({'_id': document['_id']}, {'$inc': {'health.now': 1}})
 
 

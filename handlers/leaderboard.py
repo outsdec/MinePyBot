@@ -14,7 +14,7 @@ async def top_command(message: Message):
     username = message.from_user.username
     user_id = message.from_user.id
     await find_user(user_id)
-    await message.answer(f'{await sort_users_balance()}', reply_markup=start())
+    await message.answer(f'{await sort_users_balance()} {await sort_users_by_total_sum()}', reply_markup=start())
 
 
 @router.callback_query(F.data == "top")

@@ -12,6 +12,7 @@ users = db["users"]
 
 router = Router()
 
+
 @router.callback_query(F.data == "all_sale")
 async def all_sale_items(callback: types.CallbackQuery):
     user_id = callback.from_user.id

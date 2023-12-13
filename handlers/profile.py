@@ -1,6 +1,6 @@
 import os
 
-from aiogram import F, Bot
+from aiogram import F
 from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -10,8 +10,6 @@ from base.diggers import add_user, find_user, level_up_exp
 from utils.number_format import spaces
 from PIL import Image, ImageDraw, ImageFont
 from aiogram.types import InputFile, FSInputFile
-
-bot = Bot(token="6380980028:AAF80OnPKPfoPdoo_HE9mUcxs0s1ddnY-w0")
 
 router = Router()  # [1]
 

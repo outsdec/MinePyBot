@@ -55,7 +55,7 @@ async def minemenu(callback: types.CallbackQuery):
                     resource = item["level"]
                     await user_exp(user_id, resource)
                     if chance_attack == 69:
-                        await callback.message.answer(f'Вас пизданула ебанутая ящерица, минус 1 хп.')
+                        await callback.answer(f'Вас пизданула ебанутая ящерица, минус 1 хп.', show_alert = True)
                         users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
                     if num < 40:
                         answer = f'⚡️ Вы успешно выкопали {resource} шт. кремния!\n'
@@ -71,9 +71,8 @@ async def minemenu(callback: types.CallbackQuery):
                         reply_markup=await keyboard(code))
                     await callback.answer()
                     break
-                else:
-                    await callback.answer(text="У вас не выбрана лопата для выкапывания!", show_alert=True)
-                    await callback.answer()
+            await callback.answer(text="У вас не выбрана лопата для выкапывания!", show_alert=True)
+
         if (code == 2):
             for item in items:
                 if item["type"] == "pickaxe" and item["status"] == True:
@@ -81,7 +80,7 @@ async def minemenu(callback: types.CallbackQuery):
                     resource = item["level"]
                     await user_exp(user_id, resource)
                     if chance_attack == 69:
-                        await callback.message.answer(f'Вам на голову упал бешенный камень, минус 1 хп.')
+                        await callback.answer(f'Вам на голову упал бешенный камень, минус 1 хп.', show_alert = True)
                         users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
                     if num < 40:
                         answer = f'⚡️ Вы успешно выкопали {resource} шт. гладкого камня!\n'
@@ -97,9 +96,8 @@ async def minemenu(callback: types.CallbackQuery):
                         reply_markup=await keyboard(code))
                     await callback.answer()
                     return
-                else:
-                    await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
-                    await callback.answer()
+            await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
+
         if (code == 3):
             for item in items:
                 if item["type"] == "pickaxe" and item["status"] == True:
@@ -107,7 +105,7 @@ async def minemenu(callback: types.CallbackQuery):
                     resource = item["level"]
                     await user_exp(user_id, resource)
                     if chance_attack == 69:
-                        await callback.message.answer(f'Вы попали в смолу, минус 1 хп.')
+                        await callback.answer(f'Вы попали в смолу, минус 1 хп.', show_alert = True)
                         users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
                     num = randint(1, 100)
                     resource = item["level"]
@@ -125,11 +123,10 @@ async def minemenu(callback: types.CallbackQuery):
                         reply_markup=await keyboard(code))
                     await callback.answer()
                     return
-                else:
-                    await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
-                    await callback.answer()
+            await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
 
 
+    
 @router.callback_query(F.data.startswith('notification'))
 async def notification(callback: types.CallbackQuery):
     await callback.answer(text="На данном участке нет ресурсов!", show_alert=True)

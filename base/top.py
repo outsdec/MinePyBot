@@ -8,8 +8,9 @@ users_collection = db["users"]
 
 async def sort_users_balance():
     doc = list(users_collection.find().sort("balance", -1))
+    doc = doc[:10]
     text = ''
-    text += '💰 Топ пользователей по балансу: \n\n'
+    text += '💰 Топ-10 пользователей по балансу: \n\n'
     i = 1
     for user in doc:
         text += f'{i}. {user["nickname"]} [ID: {user["_id"]}] - {spaces(user["balance"])} монеток 💰' + "\n" 
@@ -29,8 +30,8 @@ async def get_users_arrays():
 async def sort_users_by_total_sum():
     users_arrays = await get_users_arrays()
     users_sorted = sorted(users_arrays, key=lambda x: x[2], reverse=True)
-    top_users = users_sorted[:5]
-    response = '\n\n⛏ Топ пользователей по добытым блокам: \n'
+    top_users = users_sorted[:10]
+    response = '\n\n⛏ Топ-10 пользователей по добытым блокам: \n'
     i = 1
     for user, user_array, total_sum in top_users:
         response += f'{i}. {user["nickname"]} [ID: {user["_id"]}] - {spaces_mine(total_sum)} шт.\n'

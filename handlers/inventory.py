@@ -92,15 +92,8 @@ async def minemenu(callback: types.CallbackQuery):
     else:
         item = await find_item(user_id, code)
         conditions = upgrade_shovel_conditions.get(item['level'])
-        if blocks['sand'] < conditions['sand']:
-            smile_sand = "❌"
-        else:
-            smile_sand = "✔️"
-
-        if blocks['silicon'] < conditions['silicon']:
-            smile_silicon = "❌"
-        else:
-            smile_silicon = "✔️"
+        smile_sand = "✔️" if blocks['sand'] >= conditions['sand'] else "❌"
+        smile_silicon = "✔️" if blocks['silicon'] >= conditions['silicon'] else "❌"
         await callback.message.edit_text(
             f"{item['name']} (ID: {item['id']})\n Уровень: {item['level']} \n\n ⛓ Для улучшения требуется: \n📌 Песок: {blocks['sand']}/{conditions['sand']} шт. {smile_sand}\n📌 Кремний: {blocks['silicon']}/{conditions['silicon']} шт. {smile_silicon}",
             reply_markup=await item_keyboard(code))

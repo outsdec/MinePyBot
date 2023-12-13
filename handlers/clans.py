@@ -89,6 +89,30 @@ async def get_clan(callback: types.CallbackQuery):
             await callback.message.reply("Такого клана не существует!")
 
 
+@router.message(F.text == 'кланвыйти')
+@router.message(Command("clan_leave"))
+async def leave_clans(message: Message):
+    user = await find_user(message.from_user.id)
+    clan = clans.find_one({"id": user["clan_id"]})
+    if user["clan_id"] == 0:
+        await message.answer("Вы не состоите в клане!")
+    if clan:
+        users.update_one({"_id": int(user["_id"])}, {"$set": {"clan_id": 0}})
+        clans.update_one({"id": user["clan_id"]}, {"pull": {"members": {"id": user["_id"]}}})
+        await message.answer("Вы успешно вышли из клана!")
+
+@router.callback_query(F.data == "clans_leave")
+async def leave_clans(callback: types.CallbackQuery):
+    user = await find_user(callback.from_user.id)
+    clan = clans.find_one({"id": user["clan_id"]})
+    if user["clan_id"] == 0:
+        await callback.message.answer("Вы не состоите в клане!")
+    if clan:
+        users.update_one({"_id": int(user["_id"])}, {"$set": {"clan_id": 0}})
+        clans.update_one({"id": user["clan_id"]}, {"pull": {"members": {"id": user["_id"]}}})
+        await callback.message.answer("Вы успешно вышли из клана!")
+
+
 # ИНФОРМАЦИЯ О КЛАНЕ #########################################
 @router.message(F.text == '🏛 Клан')
 async def profilebutton(message: Message):
