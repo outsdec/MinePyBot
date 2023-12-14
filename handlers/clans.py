@@ -1,15 +1,21 @@
-from aiogram import F, Router, types
+from aiogram import F, Router, types, Bot
 from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from keyboards.clans import clans_list, clan_menu_list
+
 from base.diggers import find_user
 from base.stats import botstat
-from pymongo import MongoClient
+
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 import math
+
 from config_reader import config
+
+from pymongo import MongoClient
+from datetime import datetime
 
 client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
@@ -57,6 +63,7 @@ async def process_tag(message: types.Message, state: FSMContext) -> None:
         "title": data['title'],
         "tag": data['tag'],
         "tokens": 0,
+        "max_members": 10,
         "level": 1,
         "members": [{
             "id": message.from_user.id,
@@ -69,7 +76,7 @@ async def process_tag(message: types.Message, state: FSMContext) -> None:
 
 
 @router.callback_query(F.data.startswith('clanjoins_'))
-async def get_clan(callback: types.CallbackQuery):
+async def get_clan(callback: types.CallbackQuery, bot: Bot):
     if callback.data and callback.data.startswith('clanjoins_'):
         code = callback.data.split("_")[1]
         print(code)
@@ -79,8 +86,12 @@ async def get_clan(callback: types.CallbackQuery):
         user = await find_user(user_id)
         if user["clan_id"] != 0:
             return callback.message.answer('Вы уже находитесь в клане!')
+        if len(clan["members"]) == clan["max_members"]:
+            return callback.message.answer('В клане нет места!')
         if clan:
             if callback.from_user.id not in clan["members"]:
+                for members in clan["members"]:
+                    await bot.send_message(chat_id=members["id"], text=f'{user["nickname"]} вступил в клан!')
                 clans.update_one({"id": int(code)}, {"$push": {"members": {"id": callback.from_user.id, "right": 0}}})
                 users.update_one({"_id": int(user_id)}, {"$set": {"clan_id": int(code)}})
                 await callback.message.answer(f"Вы присоединились к клану [{clan['tag']}] {clan['title']}!")
@@ -92,15 +103,21 @@ async def get_clan(callback: types.CallbackQuery):
 
 @router.message(F.text == 'кланвыйти')
 @router.message(Command("clan_leave"))
-async def leave_clans(message: Message):
+async def leave_clans(message: Message, bot: Bot):
     user = await find_user(message.from_user.id)
     clan = clans.find_one({"id": user["clan_id"]})
     if user["clan_id"] == 0:
         await message.answer("Вы не состоите в клане!")
     if clan:
         users.update_one({"_id": int(user["_id"])}, {"$set": {"clan_id": 0}})
-        clans.update_one({"id": user["clan_id"]}, {"pull": {"members": {"id": user["_id"]}}})
+        clans.update_one({"id": user["clan_id"]}, {"$pull": {"members": {"id": user["_id"]}}})
         await message.answer("Вы успешно вышли из клана!")
+        clan = clans.find_one({"id": user["clan_id"]})
+        for members in clan["members"]:
+            await bot.send_message(chat_id=members["id"], text=f'{user["nickname"]} вышел из клана!')
+
+
+# clan_users_list
 
 @router.callback_query(F.data == "clans_leave")
 async def leave_clans(callback: types.CallbackQuery):
@@ -143,6 +160,7 @@ async def profilebutton(message: Message):
         text = (
             f"🤖 [{clan['tag']}] {clan['title']}\n\n"
             f"💰 Жетоны: {(clan['tokens'])} шт.\n"
+            f"🩻 Участников: {len((clan['members']))}/{(clan['max_members'])} шт.\n"
             f"💰 Развитие: {(clan['level'])} уровень\n\n"
         )
         if leader_clan != "Глава клана: \n":
@@ -153,11 +171,82 @@ async def profilebutton(message: Message):
             text += f"{stareishn}\n"
         if members != "Участники клана: \n":
             text += f"{members}\n"
-        await message.reply(f"{text}")
+        await message.reply(f"{text}", reply_markup=clans_list())
     else:
         await message.reply("У вас не создан клан!", reply_markup=clans_list())
     ##########################################################
 
+# СПИСОК УЧАСТНИКОВ КЛАНА (ПАГИНАЦИЯ) #########################################
+
+PAGE_SIZE_MEMBERS = 10
+
+
+@router.callback_query(F.data == "clan_member_list")
+async def get_clan_member_list(callback: types.CallbackQuery):
+    user = await find_user(callback.from_user.id)
+    clan = clans.find_one({"id": int(user["clan_id"])})
+    page = 1
+    keyboard = get_keyboard(page)
+    total_count = len((clan['members']))
+    pages = math.ceil(total_count / PAGE_SIZE_MEMBERS)
+    text = f"Страница {page}/{pages}\nВыберите участника клана:"
+    await callback.message.answer(text, reply_markup=keyboard)
+
+
+@router.message(Command("clan_members"))
+async def get_clan_members(message: types.Message):
+    user = await find_user(message.from_user.id)
+    clan = clans.find_one({"id": int(user["clan_id"])})
+    page = 1
+    keyboard = get_keyboard(page)
+    total_count = len((clan['members']))
+    pages = math.ceil(total_count / PAGE_SIZE_MEMBERS)
+    text = f"Страница {page}/{pages}\nВыберите участника клана:"
+    await message.answer(text, reply_markup=keyboard)
+
+
+def get_keyboard(page):
+    keyboard = InlineKeyboardBuilder()
+    total_count = len((clan['members']))
+    pages = math.ceil(total_count / PAGE_SIZE)
+    clanss = clans.find({}).sort("title") \
+        .skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE)
+
+    for clan in clanss:
+        callback_data = f"clan_id:{clan['id']}"
+        keyboard.button(text=clan['title'], callback_data=callback_data)
+    if page > 1:
+        keyboard.add(InlineKeyboardButton(text="⬅️", callback_data=f"page:{page - 1}"))
+
+    if page < pages:
+        keyboard.add(InlineKeyboardButton(text="➡️", callback_data=f"page:{page + 1}"))
+    keyboard.adjust(2)
+    return keyboard.as_markup()
+
+
+async def list_clans(message, page, pages, keyboard):
+    text = f"Страница {page}/{pages}\nВыберите клан:"
+    await message.edit_text(text, reply_markup=keyboard)
+
+
+@router.callback_query(F.data.startswith('clan_id:'))
+async def clan_info(call: types.CallbackQuery):
+    clan_id = call.data.split(":")[1]
+    clan = clans.find_one({"id": int(clan_id)})
+    print(clan)
+    text = f"Название: {clan['title']}\nЖетоны: {clan['tokens']}"
+    await call.message.answer(text, reply_markup=clan_menu_list(clan_id))
+
+
+@router.callback_query(F.data.startswith('page:'))
+async def page_switch(call: types.CallbackQuery):
+    page = int(call.data.split(":")[1])
+    keyboard = get_keyboard(page)
+    total_count = clans.count_documents({})
+    pages = math.ceil(total_count / PAGE_SIZE)
+    await list_clans(call.message, page, pages, keyboard)
+
+##########################################################
 
 # СПИСОК КЛАНОВ (ПАГИНАЦИЯ) #########################################
 
