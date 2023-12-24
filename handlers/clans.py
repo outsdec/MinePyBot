@@ -120,15 +120,18 @@ async def leave_clans(message: Message, bot: Bot):
 # clan_users_list
 
 @router.callback_query(F.data == "clans_leave")
-async def leave_clans(callback: types.CallbackQuery):
+async def leave_clans(callback: types.CallbackQuery, bot: Bot):
     user = await find_user(callback.from_user.id)
     clan = clans.find_one({"id": user["clan_id"]})
     if user["clan_id"] == 0:
         await callback.message.answer("Вы не состоите в клане!")
     if clan:
         users.update_one({"_id": int(user["_id"])}, {"$set": {"clan_id": 0}})
-        clans.update_one({"id": user["clan_id"]}, {"pull": {"members": {"id": user["_id"]}}})
+        clans.update_one({"id": user["clan_id"]}, {"$pull": {"members": {"id": user["_id"]}}})
         await callback.message.answer("Вы успешно вышли из клана!")
+        clan = clans.find_one({"id": user["clan_id"]})
+        for members in clan["members"]:
+            await bot.send_message(chat_id=members["id"], text=f'{user["nickname"]} вышел из клана!')
 
 
 # ИНФОРМАЦИЯ О КЛАНЕ #########################################
@@ -234,7 +237,7 @@ async def clan_info(call: types.CallbackQuery):
     clan_id = call.data.split(":")[1]
     clan = clans.find_one({"id": int(clan_id)})
     print(clan)
-    text = f"Название: {clan['title']}\nЖетоны: {clan['tokens']}"
+    text = f"Название: {clan['title']}\nЖетоны: {clan['tokens']}\n🩻 Участников: {len((clan['members']))}/{(clan['max_members'])} шт.\n"
     await call.message.answer(text, reply_markup=clan_menu_list(clan_id))
 
 
