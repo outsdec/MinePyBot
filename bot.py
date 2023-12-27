@@ -4,7 +4,6 @@ import asyncio
 from datetime import datetime, timedelta
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
     newsletter, eval, shop, clans, cases
-from handlers.donate import pre_checkout_query, successful_payment
 import logging
 import motor.motor_asyncio
 from config_reader import config
@@ -37,9 +36,6 @@ dp.include_routers(start.router,
                    clans.router,
                    cases.router
                    )
-
-dp.pre_checkout_query.register(pre_checkout_query)
-dp.message.register(successful_payment, F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 
 
 async def update_data():

@@ -55,11 +55,10 @@ async def add_user(user_id):
         await bot.send_message(user_id, 'Добро пожаловать! Держи лопату, положил тебе в инвентарь ⛏')
 
 async def find_user(user_id):
-    if users.find_one({"_id": int(user_id)}) is None:
+    user = users.find_one({"_id": int(user_id)})
+    if user is None:
         await add_user(user_id)
-    else:
-        user = users.find_one({"_id": user_id})
-        return user
+    return user
 
 async def update_level(user_id, level, exp):
     """Обновляет уровень пользователя и возвращает оставшееся опыт."""

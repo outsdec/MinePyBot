@@ -20,6 +20,12 @@ async def all_sale_items(callback: types.CallbackQuery):
     blocks = user['blocks']
     stat = await botstat()
     stat_price= stat['prices']
+    block_names = ['sand', 'silicon', 'overgrown_stone', 'smooth_stone', 'resin', 'amber']
+    resource_rusification = {
+        'sand': 'песка','silicon': 'кремния','overgrown_stone': 'заросшего камня',
+        'smooth_stone': 'гладкого камня','resin': 'смолы','amber': 'янтаря',  
+        }
+    response_lines = []
     sand_sale = blocks['sand'] * stat_price['sand']
     silicon_sale = blocks['silicon'] * stat_price['silicon']
     overgrown_stone_sale = blocks['overgrown_stone'] * stat_price['overgrown_stone']
@@ -27,15 +33,25 @@ async def all_sale_items(callback: types.CallbackQuery):
     resin_sale = blocks['resin'] * stat_price['resin']
     amber_sale = blocks['amber'] * stat_price['amber']
     all_sum = round(sand_sale + silicon_sale + overgrown_stone_sale + smooth_stone_sale + resin_sale + amber_sale, 4)
+    
     response = "💱 Продажа блоков:\n\n"
-    if(sand_sale > 0): response += f"💲 Вы успешно продали {spaces_mine(blocks['sand'])} шт. песка на сумму {spaces(sand_sale)} монет.\n"
-    if(silicon_sale > 0): response += f"💲 Вы успешно продали {spaces_mine(blocks['silicon'])} шт. кремния на сумму {spaces(silicon_sale)} монет.\n"
-    if(overgrown_stone_sale > 0): response += f"💲 Вы успешно продали {spaces_mine(blocks['overgrown_stone'])} шт. заросшего камня на сумму {spaces(overgrown_stone_sale)} монет.\n"
-    if(smooth_stone_sale > 0): response += f"💲 Вы успешно продали {spaces_mine(blocks['smooth_stone'])} шт. гладкого камня на сумму {spaces(smooth_stone_sale)} монет.\n"
-    if(resin_sale > 0): response += f"💲 Вы успешно продали {spaces_mine(blocks['resin'])} шт. смолы на сумму {spaces(resin_sale)} монет.\n"
-    if(amber_sale > 0): response += f"💲 Вы успешно продали {spaces_mine(blocks['amber'])} шт. янтаря на сумму {spaces(amber_sale)} монет.\n"
+    for block_name in block_names:
+        block_count = blocks[block_name]
+        block_sale = block_count * stat_price[block_name]
+        if block_sale > 0:
+            response_lines.append(
+                f"💲 Вы успешно продали {spaces_mine(block_count)} шт. {resource_rusification.get(block_name)} на сумму {spaces(block_sale)} монет."
+            )
+    response += "\n".join(response_lines)
     response += f"\n💰 За продажу блоков вы заработали {spaces(all_sum)} монеток"
-    users.update_one({'_id': user_id}, {"$set": {"blocks.sand": 0, "blocks.silicon": 0, "blocks.overgrown_stone": 0, "blocks.smooth_stone": 0, "blocks.resin": 0, "blocks.amber": 0}})
-    users.update_one({'_id': user_id}, {"$inc": {"balance": all_sum}})
+    users.update_one(
+    {'_id': user_id},
+    {
+        "$set": {
+            f"blocks.{block_name}": 0 for block_name in block_names
+        },
+        "$inc": {"balance": all_sum}
+    }
+)
     await callback.answer()
     return callback.message.answer(text= response)

@@ -41,8 +41,8 @@ async def create_clan(message: types.Message, state: FSMContext) -> None:
 
 @router.message(Form.title)
 async def process_name(message: types.Message, state: FSMContext) -> None:
-    if len(message.text) > 20 or len(message.text) < 5:
-        await message.reply("Название превышает 20 символов! Введите заново:")
+    if not (5 <= len(message.text) <= 20):
+        await message.reply("Название должно содержать от 5 до 20 символов. Пожалуйста, введите заново:")
         return
     await state.update_data(title=message.text)
     await state.set_state(Form.tag)
@@ -51,7 +51,7 @@ async def process_name(message: types.Message, state: FSMContext) -> None:
 
 @router.message(Form.tag)
 async def process_tag(message: types.Message, state: FSMContext) -> None:
-    if len(message.text) > 4 or len(message.text) < 2:
+    if not (2 <= len(message.text) <= 4):
         await message.reply("Тэг превышает 4 символа! Введите заново:")
         return
     await state.update_data(tag=message.text)
