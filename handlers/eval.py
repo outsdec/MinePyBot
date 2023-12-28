@@ -1,13 +1,12 @@
-import re
-
-from aiogram import F
-from aiogram import Router, types
+from aiogram import F, Bot, Router, types
 from aiogram.filters import Command, CommandObject
+
 from base.nickname import update_nickname
 from base.mines import add_mines
-from pymongo import MongoClient
+
 from config_reader import config
 
+from pymongo import MongoClient
 client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]

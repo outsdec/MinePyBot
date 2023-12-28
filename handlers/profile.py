@@ -1,15 +1,14 @@
-import os
-
-from aiogram import F
-from aiogram import Router, types
+from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, FSInputFile
+
 from keyboards.start import start
-from datetime import datetime
+
 from base.diggers import add_user, find_user, level_up_exp
 from utils.number_format import spaces
+
 from PIL import Image, ImageDraw, ImageFont
-from aiogram.types import InputFile, FSInputFile
+
 
 router = Router()  # [1]
 

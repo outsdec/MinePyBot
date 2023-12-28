@@ -3,7 +3,7 @@ from aiogram.enums import ContentType
 import asyncio
 from datetime import datetime, timedelta
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
-    newsletter, eval, shop, clans, cases
+    newsletter, eval, shop, clans, cases, referal
 import logging
 import motor.motor_asyncio
 from config_reader import config
@@ -34,7 +34,8 @@ dp.include_routers(start.router,
                    eval.router,
                    shop.router,
                    clans.router,
-                   cases.router
+                   cases.router,
+                   referal.router
                    )
 
 

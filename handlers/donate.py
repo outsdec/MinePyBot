@@ -1,7 +1,7 @@
-from aiogram import Bot
-from aiogram import F, Router, types
+from aiogram import F, Bot, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message, PreCheckoutQuery
+
 from yookassa import Configuration
 
 router = Router()  # [1]

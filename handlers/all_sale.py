@@ -4,6 +4,7 @@ from base.diggers import find_user
 from base.stats import botstat
 
 from utils.number_format import spaces, spaces_mine
+
 from config_reader import config
 from pymongo import MongoClient
 client = MongoClient(config.base_token.get_secret_value())

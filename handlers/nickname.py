@@ -1,6 +1,6 @@
-from aiogram import F
-from aiogram import Router, types
+from aiogram import F, Bot, Router, types
 from aiogram.filters import Command, CommandObject
+
 from base.nickname import update_nickname
 
 router = Router()  # [1]

@@ -1,8 +1,9 @@
-from aiogram import F
-from aiogram import Router, types
+from aiogram import F, Bot, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
+
 from keyboards.mine import mine
+
 from base.diggers import add_user, find_user
 
 router = Router()  # [1]

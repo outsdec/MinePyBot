@@ -1,14 +1,14 @@
-from aiogram import F
-from aiogram import Router, types, Bot
+from aiogram import F, Bot, Router, types
 from aiogram.filters import Command, CommandObject
-from pymongo import MongoClient
+
 from config_reader import config
 
-router = Router()  # [1]
+from pymongo import MongoClient
 client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 
+router = Router()  
 
 def get_subscribers():
     subscribers = users.find()

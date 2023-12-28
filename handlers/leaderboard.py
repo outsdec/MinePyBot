@@ -1,7 +1,9 @@
 from aiogram import F, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
+
 from keyboards.start import start
+
 from base.diggers import find_user
 from base.top import sort_users_balance, sort_users_by_total_sum
 

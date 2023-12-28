@@ -1,19 +1,27 @@
 from aiogram import F, Router, types
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 import random
+from random import randint
+
 from datetime import datetime
+
 from base.diggers import find_user, user_exp
 from base.mines import find_mines
+
 from utils.number_format import spaces_mine
-from pymongo import MongoClient
-from random import randint
+
+
 from config_reader import config
 
+from pymongo import MongoClient
 client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 miners = db["mines"]
+bonuses = db["bonuses"]
+
 
 router = Router()  # [1]
 

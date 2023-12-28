@@ -1,16 +1,17 @@
-from aiogram import F, Bot
-from aiogram import Router, types
+from aiogram import F, Bot, Router, types
 from aiogram.filters import Command
 from aiogram.types import Message
+
 from keyboards.shop import shop, shop_mines, shop_mines_pickaxe_buy
+
 from base.diggers import add_user, find_user
 from base.stats import botstat
-from pymongo import MongoClient
+
 from config_reader import config
 
 bot = Bot(config.bot_token.get_secret_value())
 
-
+from pymongo import MongoClient
 client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]

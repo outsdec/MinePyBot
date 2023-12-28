@@ -2,14 +2,14 @@ from aiogram import F, Router, types, Bot
 from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 
 from keyboards.clans import clans_list, clan_menu_list
 
 from base.diggers import find_user
 from base.stats import botstat
 
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 import math
 
 from config_reader import config
