@@ -1,4 +1,4 @@
-from aiogram import F, Router, types
+from aiogram import F, Router, types, Bot
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -9,6 +9,7 @@ from datetime import datetime
 
 from base.diggers import find_user, user_exp
 from base.mines import find_mines
+from base.bonus import award_personal_bonus
 
 from utils.number_format import spaces_mine
 
@@ -43,7 +44,7 @@ async def minemenu(callback: types.CallbackQuery):
 
 
 @router.callback_query(F.data.startswith('dig_'))
-async def minemenu(callback: types.CallbackQuery):
+async def minemenu(callback: types.CallbackQuery, bot: Bot):
     if callback.data and callback.data.startswith("dig_"):
         print(callback.data)
         code = callback.data[-1:]
@@ -53,6 +54,7 @@ async def minemenu(callback: types.CallbackQuery):
         user = await find_user(user_id)
         items = user['inventory']
         chance_attack = randint(1, 100)
+        chance_bonus = random.uniform(0, 1)
         num = randint(1, 100)
         if not items:
             await callback.answer(text="У вас нет предметов в инвентаре!", show_alert=True)
@@ -63,6 +65,8 @@ async def minemenu(callback: types.CallbackQuery):
                     mines = await find_mines(code)
                     resource = item["level"]
                     await user_exp(user_id, resource)
+                    if chance_bonus <= 0.02:
+                        await award_personal_bonus(user_id, 30)
                     if chance_attack == 69:
                         await callback.answer(f'Вас пизданула ебанутая ящерица, минус 1 хп.', show_alert = True)
                         users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
@@ -88,6 +92,8 @@ async def minemenu(callback: types.CallbackQuery):
                     mines = await find_mines(code)
                     resource = item["level"]
                     await user_exp(user_id, resource)
+                    if chance_bonus <= 0.02:
+                        await award_personal_bonus(user_id, 30)
                     if chance_attack == 69:
                         await callback.answer(f'Вам на голову упал бешенный камень, минус 1 хп.', show_alert = True)
                         users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})

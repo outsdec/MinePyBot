@@ -4,35 +4,41 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton
 
 from base.diggers import find_user
+from base.stats import botstat
 
 from config_reader import config
+
+bot = Bot(token=config.bot_token.get_secret_value())
 
 from pymongo import MongoClient
 client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 bonuses = db["bonuses"]
+stats = db["stats"]
 
 from datetime import datetime, timedelta
 
 class Bonus:
-    def __init__(self, bonus_id, user_id, clan_id, amount, is_personal, percentage, clan_bonus_id, start_time, duration_minutes):
+    def __init__(self, bonus_id, user_id, clan_id, is_personal, percentage, clan_bonus_id, start_time, duration_minutes):
         self.bonus_id = bonus_id
         self.user_id = user_id
         self.clan_id = clan_id
-        self.amount = amount
         self.is_personal = is_personal
         self.percentage = percentage
         self.clan_bonus_id = clan_bonus_id
         self.start_time = start_time
         self.end_time = start_time + timedelta(minutes=duration_minutes)
 
-async def award_personal_bonus(user_id, amount, percentage, clan_bonus_id=None, duration_minutes=30):
+async def award_personal_bonus(user_id, percentage, clan_bonus_id=None, duration_minutes=30):
     # Логика выдачи личного бонуса
     start_time = datetime.now()
-    bonus = Bonus(bonus_id=None, user_id=user_id, clan_id=None, amount=amount, is_personal=True, percentage=percentage,
+    stat = await botstat()
+    bonus = Bonus(bonus_id=int(stat["bonuses"]) + 1, user_id=user_id, clan_id=None, is_personal=True, percentage=percentage,
                   clan_bonus_id=clan_bonus_id, start_time=start_time, duration_minutes=duration_minutes)
+    stats.update_one({"id": 1}, {"$inc": {"bonuses": 1}})
     bonuses.insert_one(bonus.__dict__)
+    await bot.send_message(user_id, f'БОНУС БОНУС БОНУС ЕБАТЬ БОНУС БОНУС БОНУС ЦЕЛЫХ {percentage}%!!!!!!!!!!!!!!!!!! ПРОДАВАЙ ТЕПЕРЬ ЗА ДОХУЯ РЕСУРСЫ СВОИ')
 
 async def award_clan_bonus(clan_id, amount, percentage, duration_minutes=30):
     # Логика выдачи кланового бонуса
@@ -40,6 +46,7 @@ async def award_clan_bonus(clan_id, amount, percentage, duration_minutes=30):
     clan_bonus_id = "example_clan_bonus_id"
     bonus = Bonus(bonus_id=None, user_id=None, clan_id=clan_id, amount=amount, is_personal=False, percentage=percentage,
                   clan_bonus_id=clan_bonus_id, start_time=start_time, duration_minutes=duration_minutes)
+    stats.update_one({"id": 1}, {"$inc": {"bonuses": 1}})
     bonuses.insert_one(bonus.__dict__)
 
 async def calculate_sale_price(user_id, block_price):
@@ -58,8 +65,8 @@ async def calculate_sale_price(user_id, block_price):
     })
     total_percentage = sum(bonus["percentage"] for bonus in user_bonuses)
     total_bonus = total_percentage / 100 * block_price
-    sale_price = block_price - total_bonus
-    return sale_price
+    sale_price = round(block_price + total_bonus, 4)
+    return total_bonus
 
 # Пример использования
 async def process_sale(message: types.Message):

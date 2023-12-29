@@ -1,17 +1,22 @@
 from aiogram import F, Bot, Dispatcher, types
 from aiogram.enums import ContentType
+
 import asyncio
 from datetime import datetime, timedelta
+
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
     newsletter, eval, shop, clans, cases, referal
+
 import logging
 import motor.motor_asyncio
+
 from config_reader import config
 
 client = motor.motor_asyncio.AsyncIOMotorClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 miners = db["mines"]
+stats_bd = db["stats"]
 
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.INFO, filename='bot.log',
