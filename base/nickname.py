@@ -9,7 +9,5 @@ db = client["Mineprison"]
 users = db["users"]
 
 async def update_nickname(_id, nickname):
-    if await find_user(_id) is None:
-        await add_user(_id)
-    else:
-        users.update_one({'_id': _id}, {'$set': {'nickname': str(nickname)}})
+    await find_user(_id)
+    users.update_one({'_id': _id}, {'$set': {'nickname': str(nickname)}})

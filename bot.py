@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
     newsletter, eval, shop, clans, cases, referal
-
+from utils.default_menu import set_default_commands
 import logging
 import motor.motor_asyncio
 
@@ -69,13 +69,12 @@ def calculate_next_update_time():
 
 # Schedule the update_data() function to run at specific times
 async def schedule_updates():
+    await set_default_commands()
     next_update_time = calculate_next_update_time()
     await asyncio.sleep((next_update_time - datetime.now()).total_seconds())
     await update_data()
     await update_health()
 
-
-# Запуск процесса поллинга новых апдейтов
 async def main():
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_updates())

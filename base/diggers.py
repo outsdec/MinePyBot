@@ -19,9 +19,11 @@ async def add_user(user_id):
             "_id": int(user_id),
             "nickname": "Копатель",
             "balance": 0,
+            "donate_balance": 0,
             "level": 1,
             "exp": 0,
             "clan_id": 0,
+            "tournament_points": 0,
             "health": {
                 "now": 20,
                 "max": 20,

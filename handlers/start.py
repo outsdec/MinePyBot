@@ -10,7 +10,9 @@ from base.diggers import add_user, find_user
 
 from datetime import datetime
 import logging
+from config_reader import config
 
+bot = Bot(config.bot_token.get_secret_value())
 logging.basicConfig(level=logging.INFO)
 
 router = Router()  # [1]
@@ -42,6 +44,7 @@ async def cmd_start(message: Message, command: CommandObject, bot: Bot):
         f'🤘 Добро пожаловать в Mine Prison!',
                                reply_markup=start())
         await message.answer(f'Вас пригласил {(refer["nickname"])}')
+        await bot.send_message(chat_id=refer["_id"], text=f'Вы успешно пригласили {referall["nickname"]}')
         
     
 

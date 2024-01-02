@@ -13,18 +13,16 @@ router = Router()  # [1]
 @router.message(F.text == '⛏ Шахта')  # [2]
 async def minebutton(message: Message):
     user_id = message.from_user.id
-    await add_user(user_id)
     user = await find_user(user_id)
     await message.answer(
         "⛏ Шахта",
-        reply_markup=mine()
+        reply_markup=mine(user["level"])
     )
 
 
 @router.callback_query(F.data == "mine")
 async def start_mine(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    await find_user(user_id)
-    result = ""
-    result += f"⛏ Шахта"
-    await callback.message.edit_text(str(result), reply_markup=mine())
+    user = await find_user(user_id)
+    result = f"⛏ Шахта"
+    await callback.message.edit_text(str(result), reply_markup=mine(user["level"]))

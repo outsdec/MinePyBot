@@ -21,7 +21,7 @@ router = Router()  # [1]
 
 
 @router.message(Command("shop"))
-async def shop(message: Message):
+async def shop_enter(message: Message):
     user_id = message.from_user.id
     await add_user(user_id)
     user = await find_user(user_id)

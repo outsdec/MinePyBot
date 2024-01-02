@@ -15,8 +15,10 @@ router = Router()  # [1]
 @router.message(Command("eval"))
 async def eval_handler(message: types.Message):
     code = message.text[6:]
+    print(code)
     try:
-        result = await eval(code)
+        result = eval(code)
+        await message.answer(f'Команда выполнена {(result)}')
         print(result)
     except Exception as e:
         print(f"An error occurred while evaluating the command: {e}")

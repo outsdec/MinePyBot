@@ -87,58 +87,64 @@ async def minemenu(callback: types.CallbackQuery, bot: Bot):
             await callback.answer(text="У вас не выбрана лопата для выкапывания!", show_alert=True)
 
         if (code == 2):
-            for item in items:
-                if item["type"] == "pickaxe" and item["status"] == True:
-                    mines = await find_mines(code)
-                    resource = item["level"]
-                    await user_exp(user_id, resource)
-                    if chance_bonus <= 0.02:
-                        await award_personal_bonus(user_id, 30)
-                    if chance_attack == 69:
-                        await callback.answer(f'Вам на голову упал бешенный камень, минус 1 хп.', show_alert = True)
-                        users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
-                    if num < 40:
-                        answer = f'⚡️ Вы успешно выкопали {resource} шт. гладкого камня!\n'
-                        users.update_one({'_id': user_id}, {
-                            "$inc": {"blocks.smooth_stone": resource, "stats_blocks.smooth_stone": resource}})
-                    else:
-                        answer = f'⚡️ Вы успешно выкопали {resource} шт. заросшего камня!\n'
-                        users.update_one({'_id': user_id}, {
-                            "$inc": {"blocks.overgrown_stone": resource, "stats_blocks.overgrown_stone": resource}})
-                    miners.update_many({'_id': 2}, {"$inc": {"resources": -resource}})
-                    await callback.message.edit_text(
-                        f"⛏ Шахта: {mines['name']}\n\n {answer} \n🗿 Ресурсов в шахте {spaces_mine(mines['resources'] - resource)} шт.\n {datetime.now()}",
-                        reply_markup=await keyboard(code))
-                    await callback.answer()
-                    return
-            await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
+            if user["level"] < 2:
+                return await callback.answer(text='🔒 Шахта доступна от 2 уровня', show_alert=True)
+            else:
+                for item in items:
+                    if item["type"] == "pickaxe" and item["status"] == True:
+                        mines = await find_mines(code)
+                        resource = item["level"]
+                        await user_exp(user_id, resource)
+                        if chance_bonus <= 0.02:
+                            await award_personal_bonus(user_id, 30)
+                        if chance_attack == 69:
+                            await callback.answer(f'Вам на голову упал бешенный камень, минус 1 хп.', show_alert = True)
+                            users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
+                        if num < 40:
+                            answer = f'⚡️ Вы успешно выкопали {resource} шт. гладкого камня!\n'
+                            users.update_one({'_id': user_id}, {
+                                "$inc": {"blocks.smooth_stone": resource, "stats_blocks.smooth_stone": resource}})
+                        else:
+                            answer = f'⚡️ Вы успешно выкопали {resource} шт. заросшего камня!\n'
+                            users.update_one({'_id': user_id}, {
+                                "$inc": {"blocks.overgrown_stone": resource, "stats_blocks.overgrown_stone": resource}})
+                        miners.update_many({'_id': 2}, {"$inc": {"resources": -resource}})
+                        await callback.message.edit_text(
+                            f"⛏ Шахта: {mines['name']}\n\n {answer} \n🗿 Ресурсов в шахте {spaces_mine(mines['resources'] - resource)} шт.\n {datetime.now()}",
+                            reply_markup=await keyboard(code))
+                        await callback.answer()
+                        return
+                await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
 
         if (code == 3):
-            for item in items:
-                if item["type"] == "pickaxe" and item["status"] == True:
-                    mines = await find_mines(code)
-                    resource = item["level"]
-                    await user_exp(user_id, resource)
-                    if chance_attack == 69:
-                        await callback.answer(f'Вы попали в смолу, минус 1 хп.', show_alert = True)
-                        users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
-                    num = randint(1, 100)
-                    resource = item["level"]
-                    if num < 40:
-                        answer = f'⚡️ Вы успешно выкопали {resource} шт. янтаря!\n'
-                        users.update_one({'_id': user_id},
-                                         {"$inc": {"blocks.amber": resource, "stats_blocks.amber": resource}})
-                    else:
-                        answer = f'⚡️ Вы успешно выкопали {resource} шт. смолы!\n'
-                        users.update_one({'_id': user_id},
-                                         {"$inc": {"blocks.resin": resource, "stats_blocks.resin": resource}})
-                    miners.update_many({'_id': 3}, {"$inc": {"resources": -resource}})
-                    await callback.message.edit_text(
-                        f"⛏ Шахта: {mines['name']}\n\n {answer} \n🗿 Ресурсов в шахте {spaces_mine(mines['resources'] - resource)} шт.\n {datetime.now()}",
-                        reply_markup=await keyboard(code))
-                    await callback.answer()
-                    return
-            await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
+            if user["level"] < 3:
+                return await callback.answer(text='🔒 Шахта доступна от 3 уровня', show_alert=True)
+            else:
+                for item in items:
+                    if item["type"] == "pickaxe" and item["status"] == True:
+                        mines = await find_mines(code)
+                        resource = item["level"]
+                        await user_exp(user_id, resource)
+                        if chance_attack == 69:
+                            await callback.answer(f'Вы попали в смолу, минус 1 хп.', show_alert = True)
+                            users.update_one({'_id': user_id}, {"$inc": {"health.now": -1}})
+                        num = randint(1, 100)
+                        resource = item["level"]
+                        if num < 40:
+                            answer = f'⚡️ Вы успешно выкопали {resource} шт. янтаря!\n'
+                            users.update_one({'_id': user_id},
+                                             {"$inc": {"blocks.amber": resource, "stats_blocks.amber": resource}})
+                        else:
+                            answer = f'⚡️ Вы успешно выкопали {resource} шт. смолы!\n'
+                            users.update_one({'_id': user_id},
+                                             {"$inc": {"blocks.resin": resource, "stats_blocks.resin": resource}})
+                        miners.update_many({'_id': 3}, {"$inc": {"resources": -resource}})
+                        await callback.message.edit_text(
+                            f"⛏ Шахта: {mines['name']}\n\n {answer} \n🗿 Ресурсов в шахте {spaces_mine(mines['resources'] - resource)} шт.\n {datetime.now()}",
+                            reply_markup=await keyboard(code))
+                        await callback.answer()
+                        return
+                await callback.answer(text="У вас не выбрана кирка для выкапывания!", show_alert=True)
 
 
     

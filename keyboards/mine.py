@@ -2,17 +2,17 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardBu
     ReplyKeyboardRemove
 
 
-def mine():
+def mine(level):
     menu = [
         [
             InlineKeyboardButton(text="Песчаный карьер", callback_data="mine_1"),
         ],
         [
-            InlineKeyboardButton(text="Каменный лабиринт", callback_data="mine_2"),
+            InlineKeyboardButton(text=f"{'🔒 Каменный лабиринт (2 уровень.)' if level < 2 else 'Каменный лабиринт'}", callback_data="mine_2"),
 
         ],
         [
-            InlineKeyboardButton(text="Янтарный путь", callback_data="mine_3"),
+            InlineKeyboardButton(text=f"{'🔒 Янтарный путь (3 уровень.)' if level < 2 else 'Янтарный путь'}", callback_data="mine_3"),
         ],
         [
             InlineKeyboardButton(text="💰 Продать добытое", callback_data="all_sale")
