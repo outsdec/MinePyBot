@@ -5,7 +5,7 @@ import asyncio
 from datetime import datetime, timedelta
 
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
-    newsletter, eval, shop, clans, cases, referal
+    newsletter, eval, shop, clans, cases, referal, tournaments, quests
 from utils.default_menu import set_default_commands
 import logging
 import motor.motor_asyncio
@@ -40,7 +40,8 @@ dp.include_routers(start.router,
                    shop.router,
                    clans.router,
                    cases.router,
-                   referal.router
+                   referal.router,
+                   tournaments.router,
                    )
 
 

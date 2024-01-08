@@ -10,6 +10,7 @@ client = MongoClient(config.base_token.get_secret_value())
 db = client["Mineprison"]
 users = db["users"]
 stats = db["stats"]
+clans = db["clans"]
 
 async def add_user(user_id):
     if users.find_one({"_id": int(user_id)}) is None:
@@ -86,4 +87,12 @@ async def user_exp(user_id, exp):
     else:
         # Иначе просто добавляем опыт
         users.update_one({"_id": int(user_id)}, {"$inc": {"exp": exp}})
+
+async def give_points_tournament(user_id, points):
+    user = find_user(user_id)
+    clan_id = int(user["clan_id"])
+    users.update_one({"_id": int(user_id)}, {"$inc": {"exp": points}})
+    if clan_id != 0:
+        clans.update_one({"_id": int(user_id)}, {"$inc": {"exp": points}})
+
 

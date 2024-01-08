@@ -63,6 +63,7 @@ async def process_tag(message: types.Message, state: FSMContext) -> None:
         "title": data['title'],
         "tag": data['tag'],
         "tokens": 0,
+        "tournament_points": 0,
         "max_members": 10,
         "level": 1,
         "members": [{

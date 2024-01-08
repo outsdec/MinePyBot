@@ -8,5 +8,5 @@ router = Router()
 @router.message(Command("ref"))
 async def profilebutton(message: Message, bot: Bot):
     link = await create_start_link(bot, f'{message.from_user.id}', encode=True)
-    await message.answer(f"Your payload: {link}")
+    await message.answer(f"⚡️ Держи ссылку для приглашения друзей: \n {link}\n\n 👌 Скоро будут добавлены награды за приглашение.")
     print(link)
