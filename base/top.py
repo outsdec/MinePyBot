@@ -14,7 +14,7 @@ async def sort_users_balance():
     text += '💰 Топ-10 пользователей по балансу: \n\n'
     i = 1
     for user in doc:
-        text += f'{i}. {user["nickname"]} [ID: {user["_id"]}] - {spaces(user["balance"])} монеток 💰' + "\n" 
+        text += f'{i}. {user["nickname"]} - {spaces(user["balance"])} монеток 💰' + "\n" 
         i += 1
     return text
 
@@ -35,7 +35,7 @@ async def sort_users_by_total_sum():
     response = '\n\n⛏ Топ-10 пользователей по добытым блокам: \n'
     i = 1
     for user, user_array, total_sum in top_users:
-        response += f'{i}. {user["nickname"]} [ID: {user["_id"]}] - {spaces_mine(total_sum)} шт.\n'
+        response += f'{i}. {user["nickname"]} - {spaces_mine(total_sum)} шт.\n'
         i += 1
     return response
 

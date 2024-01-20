@@ -18,43 +18,21 @@ logging.basicConfig(level=logging.INFO)
 router = Router()  # [1]
 photo = FSInputFile("prison.jpg")
 
-#@router.message(CommandStart(deep_link=True))
-#async def handler(message: Message, command: CommandObject):
-#    args = command.args
-#    payload = decode_payload(args)
-#    await message.answer(f"Your payload: {payload}")
 
 @router.message(Command("start"))  # [2]
 async def cmd_start(message: Message, command: CommandObject, bot: Bot):
     username = message.from_user.username
     user_id = message.from_user.id
     args = command.args
-    print(args)
-    if not args:
-        await find_user(user_id)
-        await message.answer_photo(photo, caption=
-    f'🤘 Добро пожаловать в Mine Prison!',
+    await message.answer_photo(photo, caption=
+        f'🤘 Добро пожаловать в Mine Prison!',
                                reply_markup=start())
-    else:
+    if args:
         payload = decode_payload(args)
         refer = await find_user(payload)
         referall = await find_user(user_id)
+        if(refer == referall):
+            return
         await find_user(user_id)
-        await message.answer_photo(photo, caption=
-        f'🤘 Добро пожаловать в Mine Prison!',
-                               reply_markup=start())
         await message.answer(f'Вас пригласил {(refer["nickname"])}')
         await bot.send_message(chat_id=refer["_id"], text=f'Вы успешно пригласили {referall["nickname"]}')
-        
-    
-
-
-@router.callback_query(F.data == "start")
-async def start_mine(callback: types.CallbackQuery):
-    username = callback.from_user.username
-    user_id = callback.from_user.id
-    await find_user(user_id)
-    await callback.message.answer_photo(photo, caption=
-    f'🤘 Добро пожаловать в Mine Prison!',
-                                        reply_markup=start())
-    await callback.answer()

@@ -3,12 +3,17 @@ from aiogram.enums import ContentType
 
 import asyncio
 from datetime import datetime, timedelta
+import pytz
 
 from handlers import start, profile, minemenu, mines, leaderboard, nickname, donate, inventory, stats, all_sale, \
     newsletter, eval, shop, clans, cases, referal, tournaments, quests
 from utils.default_menu import set_default_commands
 import logging
 import motor.motor_asyncio
+from handlers.tournaments import check_and_manage_tournament
+
+from scheduler import Scheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from config_reader import config
 
@@ -46,7 +51,7 @@ dp.include_routers(start.router,
 
 
 async def update_data():
-    async for document in miners.find({"_id": 1}):
+    async for document in miners.find({}):
         max_resources = document["max_resources"]
         miners.update_many({}, {"$set": {"date": datetime.now(), "resources": max_resources}})
 
@@ -77,10 +82,40 @@ async def schedule_updates():
     await update_health()
 
 async def main():
+    await send_message_pls_next()
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_updates())
     await dp.start_polling(bot)
 
+async def send_message_pls():
+    await bot.send_message(chat_id=815087430, text=f'понедельник типа')
+
+async def send_message_pls_next():
+    jobs = scheduler.get_jobs()
+    for job in jobs:
+        # Получаем текущее время с тем же часовым поясом, что и next_run_time
+        now_with_timezone = datetime.now(pytz.timezone("Asia/Almaty"))
+
+        # Вычисляем время до следующего запуска
+        time_until_next_run = job.next_run_time - now_with_timezone
+        print(f"{job}")
+
+        await bot.send_message(chat_id=815087430, text=f'Time until next run: {time_until_next_run}')
+
+# Вместо "Asia/Almaty" используйте нужный вам часовой пояс
+
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    scheduler = AsyncIOScheduler()
+    
+    scheduler.add_job(check_and_manage_tournament, 'cron', day_of_week='sun', hour='23', minute='59')
+    scheduler.start()
+
+    try:
+        loop = asyncio.get_event_loop()
+        loop.create_task(main())
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        scheduler.shutdown()

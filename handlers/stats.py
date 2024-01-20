@@ -6,5 +6,5 @@ router = Router()  # [1]
 
 
 @router.message(Command("/stats"))
-async def addstats(message: types.Message, bot: Bot):
+async def stats(message: types.Message, bot: Bot):
     message.answer("Статистика добавлена")
